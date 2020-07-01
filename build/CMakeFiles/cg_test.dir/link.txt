@@ -1,0 +1,1 @@
+/usr/bin/g++    -rdynamic CMakeFiles/cg_test.dir/cg_test_generated_cg_test.cu.o CMakeFiles/cg_test.dir/cg_test_generated_linalg_gpu.cu.o CMakeFiles/cg_test.dir/cg_test_generated_linalg_cpu.cu.o  -o cg_test /usr/global/cuda-10.1/lib64/libcudart_static.a -lpthread -ldl -lrt 
