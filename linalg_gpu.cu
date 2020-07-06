@@ -247,15 +247,13 @@ void cg_gpu(float * x, float * A, float * b, int n, int max_iter, float prec) {
    assign_v2v_gpu(err, rr, gridsize);
    CHECK(cudaDeviceSynchronize());
    
-   float *h_err;
-   h_err=(float*)malloc(gridsize*sizeof(float)); // error needs to be copied from device to host
+   float *h_err=(float*)malloc(gridsize*sizeof(float)); // error needs to be copied from device to host
    CHECK(cudaMemcpy(h_err, err, gridsize*sizeof(float), cudaMemcpyDeviceToHost));
-   printf("h_err[0]=%f\n", h_err[0]);
+   printf("h_err[0]=%f\n", h_err);
 
-   float *err_0;
-   err_0=(float*)malloc(gridsize*sizeof(float));
+   float *err_0=(float*)malloc(gridsize*sizeof(float));
    CHECK(cudaMemcpy(err_0, err, gridsize*sizeof(float), cudaMemcpyDeviceToHost));
-   printf("err_0[0]=%f\n", err_0[0]);
+   printf("err_0[0]=%f\n", err_0);
 
    while((k < max_iter) && (h_err[0] > prec*prec*err_0[0])) {
       mat_vec_mul_gpu(ap, A, p, n);
@@ -263,7 +261,7 @@ void cg_gpu(float * x, float * A, float * b, int n, int max_iter, float prec) {
       div_gpu(alpha, rr, pap, 1.0f);
       //scalar_vec_add(x, x, p, alpha, n);
       mul_add_gpu(x, x, alpha, p, n);
-      if (k%50 == 0) {
+      if (k != 0 && k%50 == 0) {
          //mat_vec_mul(ap, A, x, n);
          mat_vec_mul_gpu(ap, A, x, n);
          //scalar_vec_add(r, b, ap, -1.0f, n);
@@ -284,10 +282,12 @@ void cg_gpu(float * x, float * A, float * b, int n, int max_iter, float prec) {
       assign_v2v_gpu(rr, rr_n, gridsize);
       //err = rr;
       assign_v2v_gpu(err, rr, gridsize);
-      printf("Iteration: %d\n", k);
-      printf("Precision: %e\n", err);
+      
+      CHECK(cudaMemcpy(h_err, err, gridsize*sizeof(float), cudaMemcpyDeviceToHost));
 
-      CHECK(cudaMemcpy(h_err, err, gridsize*sizeof(double), cudaMemcpyDeviceToHost));
+      printf("Iteration: %d\n", k);
+      printf("Precision: %e\n", h_err[0]);
+
       CHECK(cudaDeviceSynchronize());
 
       k++;
