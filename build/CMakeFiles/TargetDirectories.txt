@@ -1,3 +1,4 @@
 /users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/rebuild_cache.dir
-/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/cg_test.dir
 /users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/edit_cache.dir
+/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/cg_test.dir
+/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/check.dir

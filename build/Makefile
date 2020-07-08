@@ -123,6 +123,19 @@ cg_test/fast:
 	$(MAKE) -f CMakeFiles/cg_test.dir/build.make CMakeFiles/cg_test.dir/build
 .PHONY : cg_test/fast
 
+#=============================================================================
+# Target rules for targets named check
+
+# Build rule for target.
+check: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 check
+.PHONY : check
+
+# fast build rule for target.
+check/fast:
+	$(MAKE) -f CMakeFiles/check.dir/build.make CMakeFiles/check.dir/build
+.PHONY : check/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -130,8 +143,9 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... cg_test"
 	@echo "... edit_cache"
+	@echo "... cg_test"
+	@echo "... check"
 .PHONY : help
 
 

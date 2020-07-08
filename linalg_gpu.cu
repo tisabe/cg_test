@@ -136,30 +136,17 @@ __global__ void reduceAdd (float * res, float *g_idata, float *g_odata, unsigned
 {
     // set thread ID
     unsigned int tid = threadIdx.x;
-    unsigned int gridSize = blockDim.x*2*gridDim.x;
-    unsigned int idx = blockIdx.x * blockDim.x * 2 + threadIdx.x;
-
+    
     __shared__ float sdata[TB_SIZE];
-    //sdata[tid] = g_idata[idx];
-	__syncthreads();
+    unsigned int i = blockIdx.x*blockDim.x + threadIdx.x;
+    sdata[tid] = g_idata[i];
 
-    // add as many as possible (= 2*(n/gridSize))
-    //int sum=0;
-    sdata[tid] = 0.0f;
-    int i=idx;
-    while (i<n)
-    {
-        //sum += g_idata[i] + g_idata[i+blockDim.x];
-        sdata[tid] += g_idata[i] + g_idata[i+blockDim.x];
-        i += gridSize;
-    }
-    //g_idata[idx] = sum;
-
+    
     __syncthreads();
 
     // in-place reduction in global memory
-    for (int stride = blockDim.x / 2; stride > 32; stride /= 2)
-    //for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
+    //for (int stride = blockDim.x/2; stride > 32; stride /= 2)
+    for (int stride = blockDim.x / 2; stride > 0; stride >>= 1)
     {
         if (tid < stride)
         {
@@ -171,16 +158,17 @@ __global__ void reduceAdd (float * res, float *g_idata, float *g_odata, unsigned
         __syncthreads();
     }
         
-    if (tid < 32) warpReduce(sdata, tid);
+    //if (tid < 32) warpReduce(sdata, tid);
 
     // write result for this block to global mem
     //if (tid == 0) g_odata[blockIdx.x] = g_idata[idx];
     //if (tid == 0) g_odata[blockIdx.x] = sdata[0];
     if (tid == 0) {
          *res = sdata[0];
-         printf("res = %f\n", *res);
+         //printf("res in function = %f\n", *res);
     }
 }
+
 
 void dot_wrapper(float *res, float *g_a, float *g_b, unsigned int n) {
     /* this function calculates the sum of elements in g_odata on the gpu,
@@ -190,7 +178,9 @@ void dot_wrapper(float *res, float *g_a, float *g_b, unsigned int n) {
     float *tmp;
     CHECK(cudaMalloc((void**) &tmp, gridsize*sizeof(float)));
     dot_reduce<<<TB_SIZE, TB_SIZE>>>(g_a, g_b, tmp, n);
-    reduceAdd<<<1, TB_SIZE>>>(res, tmp, tmp, TB_SIZE);
+    //CHECK(cudaDeviceSynchronize());
+    reduceAdd<<<1, gridsize>>>(res, tmp, tmp, n);
+    CHECK(cudaFree(tmp));
 
 }
 
@@ -261,7 +251,6 @@ void cg_gpu(float * d_x, float * d_A, float * d_b, int n, int max_iter, float pr
 
    CHECK(cudaMemcpy(&h_err0, d_err, sizeof(float), cudaMemcpyDeviceToHost));
    h_err = h_err0;
-   h_err = 0;
 
    printf("h_err0=%f\n", h_err0);
    printf("h_err=%f\n", h_err);
@@ -299,10 +288,11 @@ void cg_gpu(float * d_x, float * d_A, float * d_b, int n, int max_iter, float pr
       scalar_cpy(d_err, d_rr);
       
       //CHECK(cudaMemcpy(h_err, err, gridsize*sizeof(float), cudaMemcpyDeviceToHost));
-      CHECK(cudaMemcpyToSymbol(&h_err, d_err, sizeof(float), cudaMemcpyDeviceToHost));
+      //CHECK(cudaMemcpyToSymbol(&h_err, d_err, sizeof(float), cudaMemcpyDeviceToHost));
+      CHECK(cudaMemcpy(&h_err, d_err, sizeof(float), cudaMemcpyDeviceToHost));
 
       printf("Iteration: %d\n", k);
-      printf("Precision: %e\n", h_err);
+      printf("error: %e\n\n", h_err);
 
       CHECK(cudaDeviceSynchronize());
 

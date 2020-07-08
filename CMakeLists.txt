@@ -19,3 +19,4 @@ set(src
 
 # The executable (has 'main')
 cuda_add_executable(cg_test cg_test.cu ${src})
+cuda_add_executable(check check.cu ${src})

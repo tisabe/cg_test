@@ -499,7 +499,7 @@ CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
 CUDA_64_BIT_DEVICE_CODE-ADVANCED:INTERNAL=1
 //List of intermediate files that are part of the cuda dependency
 // scanning.
-CUDA_ADDITIONAL_CLEAN_FILES:INTERNAL=/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/cg_test.dir//cg_test_generated_cg_test.cu.o.depend;/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/cg_test.dir//cg_test_generated_linalg_gpu.cu.o.depend;/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/cg_test.dir//cg_test_generated_linalg_cpu.cu.o.depend
+CUDA_ADDITIONAL_CLEAN_FILES:INTERNAL=/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/cg_test.dir//cg_test_generated_cg_test.cu.o.depend;/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/cg_test.dir//cg_test_generated_linalg_gpu.cu.o.depend;/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/cg_test.dir//cg_test_generated_linalg_cpu.cu.o.depend;/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/check.dir//check_generated_check.cu.o.depend;/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/check.dir//check_generated_linalg_gpu.cu.o.depend;/users/stud/bechtelt/CP3/cg_test/build/CMakeFiles/check.dir//check_generated_linalg_cpu.cu.o.depend
 //ADVANCED property for variable: CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE
 CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CUDA_BUILD_CUBIN
