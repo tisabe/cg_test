@@ -175,9 +175,10 @@ void dot_wrapper(float *res, float *g_a, float *g_b, unsigned int n) {
     and saves it in the 0th element in g_idata. g_idata needs to have as many elements as there are threadblocks.
     It is assumed, that all arrays are already allocated on the gpu. 
     */
+
     float *tmp;
     CHECK(cudaMalloc((void**) &tmp, gridsize*sizeof(float)));
-    dot_reduce<<<TB_SIZE, TB_SIZE>>>(g_a, g_b, tmp, n);
+    dot_reduce<<<gridsize, TB_SIZE>>>(g_a, g_b, tmp, n);
     //CHECK(cudaDeviceSynchronize());
     reduceAdd<<<1, gridsize>>>(res, tmp, tmp, n);
     CHECK(cudaFree(tmp));

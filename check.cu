@@ -10,7 +10,7 @@
 #include "linalg_gpu.h"
 
 void dot_test() {
-    npts = 1 << 13;
+    npts = 1 << 10;
     int n = npts;
 
     blocksize=512;
@@ -29,10 +29,8 @@ void dot_test() {
     CHECK(cudaMalloc((void**)&d_b, n*sizeof(float)));
     CHECK(cudaMalloc((void**)&d_res, sizeof(float)));
 
-    for (int i=0; i<n; i++) {
-        a[i] = 2.0f;
-        b[i] = 1.0f;
-    }
+    random_arr(a, n);
+    random_arr(b, n);
 
     CHECK(cudaMemcpy(d_a, a, n*sizeof(float), cudaMemcpyHostToDevice));
     CHECK(cudaMemcpy(d_b, b, n*sizeof(float), cudaMemcpyHostToDevice));
