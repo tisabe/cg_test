@@ -80,6 +80,15 @@ void gpu_test(int n) {
     scalar_vec_add(r, ax, b, -1.0f, n);
 
     printf("Error: %e\n", abs_vec(r, n)/n);
+
+    cudaFree(A_d);
+    cudaFree(x_d);
+    cudaFree(b_d);
+    free(A);
+    free(x);
+    free(b);
+    free(ax);
+    free(r);
 }
 
 int main() {

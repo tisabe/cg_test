@@ -95,11 +95,61 @@ void mat_test() {
     printf("rel error=%f\n", err/n);
 }
 
+void assign_test() {
+    /* check the assign_v2v_gpu function by:
+        generating a random array a on host
+        copying a to d_a on device
+        copying d_a to d_b on device with the function
+        copying d_b to b on host
+        checking difference between a and b
+    */
+    int n = npts;
+
+    blocksize=512;
+    gridsize= (n+blocksize-1)/blocksize;
+
+    printf("\nTesting assign_v2v_gpu with n=%d\n", n);
+
+    printf("block=%d\n", blocksize);
+    printf("grid=%d\n\n", gridsize);
+
+    float *a = (float *) malloc(n*sizeof(float));
+    float *b = (float *) malloc(n*sizeof(float));
+    float *diff = (float *) malloc(n*sizeof(float));
+
+    float *d_a, *d_b;
+    CHECK(cudaMalloc((void**)&d_a, n*sizeof(float)));
+    CHECK(cudaMalloc((void**)&d_b, n*sizeof(float)));
+    
+    random_arr(a, n);
+    set_zero(b, n);
+    
+    CHECK(cudaMemcpy(d_a, a, n*sizeof(float), cudaMemcpyHostToDevice));
+    CHECK(cudaMemcpy(d_b, b, n*sizeof(float), cudaMemcpyHostToDevice));
+    
+    assign_v2v_gpu(d_b, d_a, n);
+    
+    CHECK(cudaMemcpy(b, d_b, n*sizeof(float), cudaMemcpyDeviceToHost));
+
+    scalar_vec_add(diff, a, b, -1.0f, n);
+    float err = abs_vec(diff, n);
+    
+    printf("abs error=%f\n", err);
+    printf("rel error=%f\n", err/n);
+
+    cudaFree(d_a);
+    cudaFree(d_b);
+    free(a);
+    free(b);
+    free(diff);
+}
+
 int main() {
 
     npts = 1 << 10;
     dot_test();
     mat_test();
+    assign_test();
 
     return 0;
 }
