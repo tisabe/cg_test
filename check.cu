@@ -144,12 +144,60 @@ void assign_test() {
     free(diff);
 }
 
+void sub_test() {
+    /* check if sub_gpu and scalar vec add produce same result*/
+    int n = npts;
+
+    blocksize=512;
+    gridsize= (n+blocksize-1)/blocksize;
+
+    printf("\nTesting sub_gpu with n=%d\n", n);
+
+    printf("block=%d\n", blocksize);
+    printf("grid=%d\n\n", gridsize);
+
+    float *a = (float *) malloc(n*sizeof(float));
+    float *b = (float *) malloc(n*sizeof(float));
+    float *res = (float *) malloc(n*sizeof(float));
+    float *res_gpu = (float *) malloc(n*sizeof(float));
+    float *diff = (float *) malloc(n*sizeof(float));
+
+    float *d_a, *d_b, *d_res;
+    CHECK(cudaMalloc((void**)&d_a, n*sizeof(float)));
+    CHECK(cudaMalloc((void**)&d_b, n*sizeof(float)));
+    CHECK(cudaMalloc((void**)&d_res, n*sizeof(float)));
+    
+    random_arr(a, n);
+    random_arr(b, n);
+    
+    CHECK(cudaMemcpy(d_a, a, n*sizeof(float), cudaMemcpyHostToDevice));
+    CHECK(cudaMemcpy(d_b, b, n*sizeof(float), cudaMemcpyHostToDevice));
+    
+    sub_gpu(d_res, d_a, d_b, n); // function call on device
+    scalar_vec_add(res, a, b, -1.0f, n); // function call on host 
+    
+    CHECK(cudaMemcpy(res_gpu, d_res, n*sizeof(float), cudaMemcpyDeviceToHost));
+
+    scalar_vec_add(diff, res, res_gpu, -1.0f, n);
+    float err = abs_vec(diff, n);
+    
+    printf("abs error=%f\n", err);
+    printf("rel error=%f\n", err/n);
+
+    cudaFree(d_a);
+    cudaFree(d_b);
+    free(a);
+    free(b);
+    free(diff);
+}
+
 int main() {
 
     npts = 1 << 10;
     dot_test();
     mat_test();
     assign_test();
+    sub_test();
 
     return 0;
 }

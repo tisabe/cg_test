@@ -30,24 +30,29 @@ __global__ void sub_gpu_kernel(float *res, float *v, float *w, int n)
 {
    int idx=blockIdx.x*blockDim.x + threadIdx.x;
 
-   for (; (idx<n); idx+=blockDim.x*gridDim.x)
-      res[idx] += v[idx] - w[idx];
+   /*for (; (idx<n); idx+=blockDim.x*gridDim.x)
+      res[idx] += v[idx] - w[idx];*/
+   if (idx<n) {
+      res[idx] = v[idx] - w[idx];
+   }
 }
 
 __global__ void mul_add_gpu_kernel(float *res, float *v, float *alpha, float *w, int n)
 {
    int idx=blockIdx.x*blockDim.x + threadIdx.x;
 
-   for (; (idx<n); idx+=blockDim.x*gridDim.x)
-      res[idx] += v[idx] + alpha[0]*w[idx];
+   if (idx<n) {
+      res[idx] = v[idx] + (*alpha)*w[idx];
+   }
 }
 
 __global__ void mul_sub_gpu_kernel(float *res, float *v, float *alpha, float *w, int n)
 {
    int idx=blockIdx.x*blockDim.x + threadIdx.x;
 
-   for (; (idx<n); idx+=blockDim.x*gridDim.x)
-      res[idx] += v[idx] - alpha[0]*w[idx];
+   if (idx<n) {
+      res[idx] = v[idx] - (*alpha)*w[idx];
+   }
 }
 
 void sub_gpu(float *res, float *v, float *w, int n)
