@@ -69,7 +69,7 @@ void mul_add_gpu(float *res, float *v, float *alpha, float *w, int n)
 
 void mul_sub_gpu(float *res, float *v, float *alpha, float *w, int n)
 {
-   mul_add_gpu_kernel<<<gridsize,blocksize>>>(res,v,alpha,w,n);
+   mul_sub_gpu_kernel<<<gridsize,blocksize>>>(res,v,alpha,w,n);
    //CHECK(cudaDeviceSynchronize());
 }
 
